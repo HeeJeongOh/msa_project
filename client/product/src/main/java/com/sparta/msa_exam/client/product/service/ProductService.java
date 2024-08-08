@@ -35,7 +35,6 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductResponseDto getProductById(Long productId) {
         Product product = productRepository.findById(productId)
-                .filter(p -> p.getDeletedAt() == null)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found or has been deleted"));
         return toResponseDto(product);
     }
@@ -43,48 +42,26 @@ public class ProductService {
     @Transactional
     public ProductResponseDto updateProduct(Long productId, ProductRequestDto requestDto, String userId) {
         Product product = productRepository.findById(productId)
-                .filter(p -> p.getDeletedAt() == null)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found or has been deleted"));
 
-        product.updateProduct(requestDto.getName(), requestDto.getDescription(), requestDto.getPrice(), requestDto.getQuantity(), userId);
+        product.updateProduct(requestDto.getName(), requestDto.getSupply_price());
         Product updatedProduct = productRepository.save(product);
 
         return toResponseDto(updatedProduct);
     }
 
-    @Transactional
-    public void deleteProduct(Long productId, String deletedBy) {
-        Product product = productRepository.findById(productId)
-                .filter(p -> p.getDeletedAt() == null)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found or has been deleted"));
-        product.deleteProduct(deletedBy);
-        productRepository.save(product);
-    }
-
-    @Transactional
-    public void reduceProductQuantity(Long productId, int quantity) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + productId));
-
-        if (product.getQuantity() < quantity) {
-            throw new IllegalArgumentException("Not enough quantity for product ID: " + productId);
-        }
-
-        product.reduceQuantity(quantity);
-        productRepository.save(product);
-    }
+//    @Transactional
+//    public void deleteProduct(Long productId, String deletedBy) {
+//        Product product = productRepository.findById(productId)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found or has been deleted"));
+//        productRepository.save(product);
+//    }
 
     private ProductResponseDto toResponseDto(Product product) {
         return new ProductResponseDto(
                 product.getId(),
                 product.getName(),
-                product.getDescription(),
-                product.getPrice(),
-                product.getQuantity(),
-                product.getCreatedAt(),
-                product.getCreatedBy(),
-                product.getUpdatedAt(),
-                product.getUpdatedBy()
+                product.getSupply_price()
         );
     }
 }

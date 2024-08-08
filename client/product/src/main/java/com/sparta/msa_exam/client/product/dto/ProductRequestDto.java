@@ -9,7 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProductRequestDto {
     private String name;
-    private String description;
-    private Integer price;
-    private Integer quantity;
+    private Integer supply_price;
 }

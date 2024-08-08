@@ -20,17 +20,18 @@ public class ProductController {
 
     private final ProductService productService;
 
-
+    // 1. POST /products  상품 추가 API
     @PostMapping
     public ProductResponseDto createProduct(@RequestBody ProductRequestDto productRequestDto,
                                             @RequestHeader(value = "X-User-Id", required = true) String userId,
                                             @RequestHeader(value = "X-Role", required = true) String role) {
-        if (!"MANAGER".equals(role)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied. User role is not MANAGER.");
-        }
+//        if (!"MANAGER".equals(role)) {
+//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied. User role is not MANAGER.");
+//        }
         return productService.createProduct(productRequestDto, userId);
     }
 
+    // 2. GET /products 상품 목록 조회 API
     @GetMapping
     public Page<ProductResponseDto> getProducts(ProductSearchDto searchDto, Pageable pageable) {
         return productService.getProducts(searchDto, pageable);
@@ -47,15 +48,5 @@ public class ProductController {
                                             @RequestHeader(value = "X-User-Id", required = true) String userId,
                                             @RequestHeader(value = "X-Role", required = true) String role) {
         return productService.updateProduct(productId, orderRequestDto, userId);
-    }
-
-    @DeleteMapping("/{productId}")
-    public void deleteProduct(@PathVariable Long productId, @RequestParam String deletedBy) {
-        productService.deleteProduct(productId, deletedBy);
-    }
-
-    @GetMapping("/{id}/reduceQuantity")
-    public void reduceProductQuantity(@PathVariable Long id, @RequestParam int quantity) {
-        productService.reduceProductQuantity(id, quantity);
     }
 }
