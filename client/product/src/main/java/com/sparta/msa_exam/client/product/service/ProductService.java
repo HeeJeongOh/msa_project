@@ -59,7 +59,7 @@ public class ProductService {
 
     private ProductResponseDto toResponseDto(Product product) {
         return new ProductResponseDto(
-                product.getId(),
+                product.getProduct_id(),
                 product.getName(),
                 product.getSupply_price()
         );

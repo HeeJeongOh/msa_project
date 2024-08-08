@@ -5,8 +5,6 @@ import com.sparta.msa_exam.client.product.dto.ProductResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,7 +14,7 @@ import java.time.LocalDateTime;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long product_id;
 
     private String name;
     private Integer supply_price;
@@ -37,7 +35,7 @@ public class Product {
     // DTO로 변환하는 메서드
     public ProductResponseDto toResponseDto() {
         return new ProductResponseDto(
-                this.id,
+                this.product_id,
                 this.name,
                 this.supply_price
         );
