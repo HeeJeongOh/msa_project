@@ -6,24 +6,23 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
     private final AuthService authService;
 
-    @PostMapping("/auth/signIn")
+    @PostMapping("/signIn")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody SignInRequest signInRequest){
         String token = authService.signIn(signInRequest.getUserId(), signInRequest.getPassword());
         return ResponseEntity.ok(new AuthResponse(token));
     }
 
-    @PostMapping("/auth/signUp")
+    @PostMapping("/signUp")
     public ResponseEntity<?> signUp(@RequestBody User user) {
         User createdUser = authService.signUp(user);
         return ResponseEntity.ok(createdUser);
