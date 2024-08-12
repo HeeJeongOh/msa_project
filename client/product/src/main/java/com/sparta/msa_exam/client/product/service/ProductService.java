@@ -11,11 +11,12 @@ import org.springframework.data.domain.Pageable;
 
 import com.sparta.msa_exam.client.product.dto.ProductRequestDto;
 import com.sparta.msa_exam.client.product.dto.ProductResponseDto;
-import com.sparta.msa_exam.client.product.dto.ProductSearchDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 
 @Service
@@ -40,9 +41,11 @@ public class ProductService {
         return toResponseDto(product);
     }
 
-    @Cacheable(cacheNames = "productAllCache", key="methodName")
-    public Page<ProductResponseDto> getProducts(ProductSearchDto searchDto, Pageable pageable) {
-        return productRepository.searchProducts(searchDto, pageable);
+    @Cacheable(cacheNames = "productCache", key="args[0]")
+    @Transactional(readOnly = true)
+    public List<ProductResponseDto> getProductsByList() {
+        List<ProductResponseDto> products = productRepository.findAll().stream().map(Product::toResponseDto).toList();
+        return products;
     }
 
     @CachePut(cacheNames = "productCache", key = "args[0]")
