@@ -3,6 +3,9 @@ package com.sparta.msa_exam.client.product.service;
 import com.sparta.msa_exam.client.product.entity.Product;
 import com.sparta.msa_exam.client.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -21,6 +24,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
+    @CachePut(cacheNames = "productCache", key = "#result.id")
     @Transactional
     public ProductResponseDto createProduct(ProductRequestDto requestDto, String userId) {
         Product product = Product.createProduct(requestDto, userId);
@@ -28,10 +32,7 @@ public class ProductService {
         return toResponseDto(savedProduct);
     }
 
-    public Page<ProductResponseDto> getProducts(ProductSearchDto searchDto, Pageable pageable) {
-        return productRepository.searchProducts(searchDto, pageable);
-    }
-
+    @Cacheable(cacheNames = "productCache", key="args[0]")
     @Transactional(readOnly = true)
     public ProductResponseDto getProductById(Long productId) {
         Product product = productRepository.findById(productId)
@@ -39,6 +40,13 @@ public class ProductService {
         return toResponseDto(product);
     }
 
+    @Cacheable(cacheNames = "productAllCache", key="methodName")
+    public Page<ProductResponseDto> getProducts(ProductSearchDto searchDto, Pageable pageable) {
+        return productRepository.searchProducts(searchDto, pageable);
+    }
+
+    @CachePut(cacheNames = "productCache", key = "args[0]")
+    @CacheEvict(cacheNames = "productAllCache", allEntries = true)
     @Transactional
     public ProductResponseDto updateProduct(Long productId, ProductRequestDto requestDto, String userId) {
         Product product = productRepository.findById(productId)

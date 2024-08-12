@@ -11,9 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProductSearchDto {
     private String name;
-    private String description;
     private Double minPrice;
     private Double maxPrice;
-    private Integer minQuantity;
-    private Integer maxQuantity;
 }
